@@ -1,6 +1,7 @@
 // src/extension.ts
 import * as vscode from "vscode";
-import { DriftTreeDataProvider, StackItem } from "./treeDataProvider";
+import { DriftTreeDataProvider } from "./treeDataProvider";
+import { StackSummary } from "@aws-sdk/client-cloudformation";
 
 export function activate(context: vscode.ExtensionContext) {
   const driftProvider = new DriftTreeDataProvider();
@@ -8,20 +9,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   const runDriftCheck = vscode.commands.registerCommand(
     "driftAnalyzer.runDriftCheck",
-    async (stack: StackItem) => {
+    async (stack: StackSummary) => {
       vscode.window.showInformationMessage(
-        `Running drift check for ${stack.name}...`,
+        `Running drift check for ${stack.StackName}...`,
       );
 
       // TODO: Replace this mock with actual AWS SDK / CLI call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const status: StackItem["status"] =
-        Math.random() > 0.5 ? "CLEAN" : "DRIFTED";
-      driftProvider.updateStackStatus(stack.name, status);
+      // const status: StackSummary["status"] =
+      //   Math.random() > 0.5 ? "CLEAN" : "DRIFTED";
+      // driftProvider.updateStackStatus(stack.StackName, status);
 
       vscode.window.showInformationMessage(
-        `Drift check complete: ${stack.name} is ${status}`,
+        `Drift check complete: ${stack.StackName} is `,
       );
     },
   );

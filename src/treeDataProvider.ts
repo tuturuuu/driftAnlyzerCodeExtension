@@ -1,21 +1,20 @@
 // src/treeDataProvider.ts
+import { StackSummary } from "@aws-sdk/client-cloudformation";
 import * as vscode from "vscode";
-
-export interface StackItem {
-  name: string;
-  status: "CLEAN" | "DRIFTED" | "UNKNOWN";
-  lastChecked?: Date;
-}
+import { listAllStacks } from "./services/stackService";
 
 class DriftTreeItem extends vscode.TreeItem {
-  constructor(public readonly stack: StackItem) {
-    super(stack.name, vscode.TreeItemCollapsibleState.None);
-    this.tooltip = `Stack: ${stack.name}\nStatus: ${stack.status}`;
-    this.description = stack.status;
+  constructor(public readonly stack: StackSummary) {
+    super(
+      stack.StackName ?? "Unknown Stack",
+      vscode.TreeItemCollapsibleState.None,
+    );
+    this.tooltip = `Stack: ${stack.StackName}\nStatus: ${stack.StackStatus}`;
+    this.description = stack.StackStatus;
     this.iconPath = new vscode.ThemeIcon(
-      stack.status === "CLEAN"
+      stack.StackStatus === "UPDATE_COMPLETE"
         ? "check"
-        : stack.status === "DRIFTED"
+        : stack.StackStatus === "UPDATE_ROLLBACK_COMPLETE"
         ? "warning"
         : "circle-outline",
     );
@@ -36,11 +35,16 @@ export class DriftTreeDataProvider
   readonly onDidChangeTreeData: vscode.Event<DriftTreeItem | undefined | void> =
     this._onDidChangeTreeData.event;
 
-  private stacks: StackItem[] = [
-    { name: "dev-app-stack", status: "UNKNOWN" },
-    { name: "prod-network-stack", status: "UNKNOWN" },
-    { name: "demo-stack", status: "UNKNOWN" },
-  ];
+  private stacks: StackSummary[] = [];
+
+  constructor() {
+    this.loadStacks();
+  }
+
+  private async loadStacks() {
+    this.stacks = await listAllStacks();
+    this.refresh();
+  }
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
@@ -56,11 +60,11 @@ export class DriftTreeDataProvider
     );
   }
 
-  updateStackStatus(name: string, status: StackItem["status"]) {
-    const stack = this.stacks.find((s) => s.name === name);
+  updateStackStatus(name: string, status: StackSummary["StackStatus"]) {
+    const stack = this.stacks.find((s) => s.StackName === name);
     if (stack) {
-      stack.status = status;
-      stack.lastChecked = new Date();
+      stack.StackStatus = status;
+      // StackSummary does not have lastChecked, so we skip it
     }
     this.refresh();
   }
