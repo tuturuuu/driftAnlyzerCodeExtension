@@ -1,0 +1,56 @@
+{
+  "name": "drift-analyzer",
+  "displayName": "Drift Analyzer",
+  "description": "Detect and classify CloudFormation drift inside VS Code.",
+  "version": "0.0.1",
+  "publisher": "your-name",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:driftAnalyzerView",
+    "onCommand:driftAnalyzer.runDriftCheck"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "driftAnalyzer",
+          "title": "Drift Analyzer",
+          "icon": "icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "driftAnalyzer": [
+        {
+          "id": "driftAnalyzerView",
+          "name": "Stacks"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "driftAnalyzer.runDriftCheck",
+        "title": "Drift Analyzer: Run Drift Check"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.0.0",
+    "tslint": "^6.1.3"
+  }
+}
