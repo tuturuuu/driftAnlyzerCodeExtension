@@ -28,7 +28,7 @@
     "views": {
       "driftAnalyzer": [
         {
-          "id": "driftAnalyzerView",
+          "id": "driftAnalyzer",
           "name": "Stacks"
         }
       ]
@@ -37,8 +37,81 @@
       {
         "command": "driftAnalyzer.runDriftCheck",
         "title": "Drift Analyzer: Run Drift Check"
+      },
+      {
+        "command": "driftAnalyzer.refreshStack",
+        "title": "Refresh",
+        "icon": "$(refresh)"
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "driftAnalyzer.refreshStack",
+          "when": "view == driftAnalyzer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "driftAnalyzer.runDriftCheck",
+          "when": "view == driftAnalyzer && viewItem == stackItem",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "My Extension",
+      "properties": {
+        "myExtension.awsRegion": {
+          "type": "string",
+          "default": "us-east-1",
+          "enum": [
+            "us-east-1",
+            "us-west-2",
+            "eu-central-1",
+            "ap-southeast-1"
+          ],
+          "description": "AWS region to use for CloudFormation"
+        },
+        "myExtension.statusFilter": {
+          "type": "array",
+          "default": [
+            "CREATE_COMPLETE",
+            "UPDATE_COMPLETE"
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "CREATE_COMPLETE",
+              "CREATE_FAILED",
+              "CREATE_IN_PROGRESS",
+              "DELETE_COMPLETE",
+              "DELETE_FAILED",
+              "DELETE_IN_PROGRESS",
+              "IMPORT_COMPLETE",
+              "IMPORT_IN_PROGRESS",
+              "IMPORT_ROLLBACK_COMPLETE",
+              "IMPORT_ROLLBACK_FAILED",
+              "IMPORT_ROLLBACK_IN_PROGRESS",
+              "REVIEW_IN_PROGRESS",
+              "ROLLBACK_COMPLETE",
+              "ROLLBACK_FAILED",
+              "ROLLBACK_IN_PROGRESS",
+              "UPDATE_COMPLETE",
+              "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+              "UPDATE_FAILED",
+              "UPDATE_IN_PROGRESS",
+              "UPDATE_ROLLBACK_COMPLETE",
+              "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS",
+              "UPDATE_ROLLBACK_FAILED",
+              "UPDATE_ROLLBACK_IN_PROGRESS"
+            ]
+          },
+          "description": "Choose one or more stack statuses to display."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
